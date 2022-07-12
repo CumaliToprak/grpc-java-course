@@ -1,6 +1,7 @@
 package calculator.client;
 
 import com.proto.calculator.CalculatorServiceGrpc;
+import com.proto.calculator.PrimeRequest;
 import com.proto.calculator.SumRequest;
 import com.proto.calculator.SumResponse;
 import com.proto.greeting.GreetingRequest;
@@ -23,10 +24,19 @@ public class CalculatorClient {
 
         switch (args[0]) {
             case "sum" -> doCalculate(channel);
+            case "find_prime_numbers" -> doPrimeNumbers(channel);
             default -> System.out.println("Keyword invalid " + args[0]);
         }
         System.out.println("Shutting down");
         channel.shutdown();
+
+    }
+
+    private static void doPrimeNumbers(ManagedChannel channel) {
+        System.out.println("Enter doCalculate");
+        CalculatorServiceGrpc.CalculatorServiceBlockingStub stub = CalculatorServiceGrpc.newBlockingStub(channel);
+        stub.findPrimeNumbers(PrimeRequest.newBuilder().setNumber(26).build())
+                .forEachRemaining(res -> System.out.println(res.getResult()));
 
     }
 
