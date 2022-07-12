@@ -38,7 +38,7 @@ public class GreetingClient {
 
     //for client streaming
     private static void doLongGreet(ManagedChannel channel) throws InterruptedException {
-        System.out.println("Enter doLongGreet");
+            System.out.println("Enter doLongGreet");
         //creates asynchronous stub
         GreetingServiceGrpc.GreetingServiceStub greetingServiceStub = GreetingServiceGrpc.newStub(channel);
         List<String> names = new ArrayList<>();
@@ -72,7 +72,6 @@ public class GreetingClient {
         // block the main thread execution until the current count reaches to zero, or timout reach,
         // or interrupted by other threads. the count is decremented using countDown() method
         latch.await(3, TimeUnit.SECONDS);
-
 
     }
 
