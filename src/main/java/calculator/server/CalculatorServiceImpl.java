@@ -3,6 +3,7 @@ package calculator.server;
 
 import com.proto.calculator.*;
 import com.proto.greeting.GreetingResponse;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
 import java.util.ArrayList;
@@ -98,5 +99,21 @@ The client will send a stream of number (1,5,3,6,2,20) and the server will respo
                 responseObserver.onCompleted();
             }
         };
+    }
+
+    @Override
+    public void sqrt(SqrtRequest request, StreamObserver<SqrtResponse> responseObserver) {
+        int number = request.getNumber();
+        if(number < 0){
+            responseObserver.onError(Status.INVALID_ARGUMENT
+                    .withDescription("The number being sent cannot be negative")
+                    .augmentDescription("Number: "+request.getNumber())
+                    .asRuntimeException());
+            return;
+        }
+
+        responseObserver.onNext(SqrtResponse.newBuilder().setResponse(Math.sqrt(number)).build());
+        responseObserver.onCompleted();
+
     }
 }

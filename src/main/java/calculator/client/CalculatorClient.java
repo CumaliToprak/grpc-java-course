@@ -28,11 +28,29 @@ public class CalculatorClient {
             case "find_prime_numbers" -> doPrimeNumbers(channel);
             case "find_average" -> doFindAverage(channel);
             case "find_max" -> doFindMax(channel);
+            case "sqrt" -> doSqrt(channel);
             default -> System.out.println("Keyword invalid " + args[0]);
         }
         System.out.println("Shutting down");
         channel.shutdown();
 
+    }
+
+    private static void doSqrt(ManagedChannel channel) {
+        System.out.println("Enter doSqrt");
+        CalculatorServiceGrpc.CalculatorServiceBlockingStub stub = CalculatorServiceGrpc.newBlockingStub(channel);
+        SqrtResponse sqrtResponse = stub.sqrt(SqrtRequest.newBuilder().setNumber(25).build());
+
+        System.out.println("sqrt 25 = "+sqrtResponse.getResponse());
+
+        try {
+            sqrtResponse = stub.sqrt(SqrtRequest.newBuilder().setNumber(-1).build());
+            System.out.println("sqrt -1 = "+sqrtResponse.getResponse());
+        }catch (RuntimeException e)
+        {
+            System.out.println("got an error in Sqrt");
+            e.printStackTrace();
+        }
     }
 
     private static void doFindMax(ManagedChannel channel) throws InterruptedException {
