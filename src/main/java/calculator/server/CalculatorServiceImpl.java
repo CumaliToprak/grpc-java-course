@@ -60,4 +60,43 @@ public class CalculatorServiceImpl extends CalculatorServiceGrpc.CalculatorServi
             }
         };
     }
+
+
+    /*In this exercise, your goal is to implement a Max RPC Bi-Directional Streaming API in a CalculatorService:
+
+The function takes a stream of Request message that has one integer, and returns a stream of Responses that represent the current maximum between all these integers
+
+Remember to first implement the service definition in a .proto file, alongside the RPC messages
+
+Implement the Server code first
+
+Test the server code by implementing the Client
+
+Example:
+
+The client will send a stream of number (1,5,3,6,2,20) and the server will respond with a stream of (1,5,6,20)*/
+    @Override
+    public StreamObserver<MaxRequest> findMaxOfCurrentStream(StreamObserver<MaxResponse> responseObserver)
+    {
+        List<Integer> numbers = new ArrayList<>();
+        return new StreamObserver<MaxRequest>() {
+            @Override
+            public void onNext(MaxRequest value) {
+                if(numbers.stream().filter(n -> n > value.getNumber()).count() == 0){
+                    responseObserver.onNext(MaxResponse.newBuilder().setResult(value.getNumber()).build());
+                    numbers.add(value.getNumber());
+                }
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                responseObserver.onError(t);
+            }
+
+            @Override
+            public void onCompleted() {
+                responseObserver.onCompleted();
+            }
+        };
+    }
 }

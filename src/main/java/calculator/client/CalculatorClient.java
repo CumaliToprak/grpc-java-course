@@ -1,14 +1,11 @@
 package calculator.client;
 
 import com.proto.calculator.*;
-import com.proto.greeting.GreetingRequest;
-import com.proto.greeting.GreetingResponse;
-import com.proto.greeting.GreetingServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -30,10 +27,40 @@ public class CalculatorClient {
             case "sum" -> doCalculate(channel);
             case "find_prime_numbers" -> doPrimeNumbers(channel);
             case "find_average" -> doFindAverage(channel);
+            case "find_max" -> doFindMax(channel);
             default -> System.out.println("Keyword invalid " + args[0]);
         }
         System.out.println("Shutting down");
         channel.shutdown();
+
+    }
+
+    private static void doFindMax(ManagedChannel channel) throws InterruptedException {
+        System.out.println("Enter doFindMax");
+        CalculatorServiceGrpc.CalculatorServiceStub stub= CalculatorServiceGrpc.newStub(channel);
+        CountDownLatch latch = new CountDownLatch(1);
+
+        StreamObserver<MaxRequest> maxRequestStreamObserver = stub.findMaxOfCurrentStream(new StreamObserver<MaxResponse>() {
+            @Override
+            public void onNext(MaxResponse value) {
+                System.out.println(value.getResult());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+
+            }
+
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        });
+
+        Arrays.asList(1, 5, 3, 6, 2, 20).forEach( n -> {
+            maxRequestStreamObserver.onNext(MaxRequest.newBuilder().setNumber(n).build());
+        });
+        latch.await(3, TimeUnit.SECONDS);
 
     }
 

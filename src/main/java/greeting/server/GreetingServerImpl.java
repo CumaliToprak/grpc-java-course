@@ -53,4 +53,26 @@ public class GreetingServerImpl extends GreetingServiceGrpc.GreetingServiceImplB
         };
     }
 
+    @Override
+    public StreamObserver<GreetingRequest> greetEveryone(StreamObserver<GreetingResponse> responseObserver)
+    {
+        //no need to concatenate the request message because this is bidirectional, we can send the response when we get the request
+        return new StreamObserver<GreetingRequest>() {
+            @Override
+            public void onNext(GreetingRequest request) {
+                responseObserver.onNext(GreetingResponse.newBuilder().setResult("Hello "+request.getFirstName()).build());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                responseObserver.onError(t);
+            }
+
+            @Override
+            public void onCompleted() {
+                responseObserver.onCompleted();
+            }
+        };
+    }
+
 }
