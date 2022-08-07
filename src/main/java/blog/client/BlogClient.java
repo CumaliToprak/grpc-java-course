@@ -71,12 +71,11 @@ public class BlogClient {
 
     private static void run(ManagedChannel channel) {
         BlogServiceGrpc.BlogServiceBlockingStub stub = BlogServiceGrpc.newBlockingStub(channel);
-        BlogId blogId = createBlog(stub);
+        BlogId blogId = createBlog(stub);   
 
         if(blogId == null) return;
 
         readBlog(stub, blogId);
         updateBlog(stub, blogId);
-
     }
 }
